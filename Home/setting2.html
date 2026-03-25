@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMaster - Paramètres</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="manifest" href="../manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../service-worker.js')
+                .then(() => console.log('Service Worker enregistré'))
+                .catch(err => console.error('Erreur SW:', err));
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-dark: #05070a;
+            --card-surface: #111827;
+            --mint-accent: #00ffaa;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background: var(--bg-dark); color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; }
+
+        header { padding: 40px 20px 20px; text-align: left; }
+        header h1 { font-family: 'Outfit'; font-size: 2rem; font-weight: 900; }
+        header span { color: var(--mint-accent); }
+
+        .container { padding: 0 20px; max-width: 500px; margin: 0 auto; }
+
+        .profile-card {
+            background: var(--card-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 25px;
+            text-align: center; margin-bottom: 30px;
+        }
+
+        .avatar-large {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--mint-accent), #0088ff);
+            margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 800; color: var(--bg-dark);
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .setting-group { margin-bottom: 20px; text-align: left; }
+        .setting-group label {
+            display: block; font-size: 0.75rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 8px; font-weight: 700;
+        }
+        .setting-group input {
+            width: 100%; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 15px;
+            color: white; font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        .setting-group input:focus { border-color: var(--mint-accent); background: rgba(0,255,170,0.05); }
+
+        .save-btn {
+            width: 100%; background: var(--mint-accent); color: var(--bg-dark);
+            padding: 18px; border-radius: 18px; border: none;
+            font-family: 'Outfit'; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .save-btn:active { transform: scale(0.95); }
+
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; height: 70px;
+            background: rgba(17,24,39,0.9); backdrop-filter: blur(20px);
+            border-radius: 35px; border: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item { text-decoration: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; font-weight: 700; }
+        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+        .nav-item.active { color: var(--mint-accent); }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Vos <span>Réglages</span></h1>
+    </header>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="avatar-large" id="avatarDisplay">??</div>
+            <h2 id="namePreview" style="font-family:'Outfit';">Utilisateur</h2>
+            <p style="color:var(--text-muted);font-size:0.8rem;">Compte Local MoneyMaster</p>
+        </div>
+
+        <div class="setting-group">
+            <label>Votre Nom</label>
+            <input type="text" id="userNameInput" placeholder="Entrez votre nom...">
+        </div>
+
+        <button class="save-btn" onclick="saveSettings()">ENREGISTRER LES MODIFICATIONS</button>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="graphes.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Graphe</span></a>
+        <a href="Depenses.html" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Dépense</span></a>
+        <a href="setting2.html" class="nav-item active"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+    </nav>
+
+    <script>
+        function init() {
+            const savedName = localStorage.getItem('mm_user_name') || 'Utilisateur';
+            document.getElementById('userNameInput').value = savedName;
+            updateUI(savedName);
+        }
+
+        function updateUI(name) {
+            document.getElementById('namePreview').innerText = name;
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            document.getElementById('avatarDisplay').innerText = initials || '??';
+        }
+
+        function saveSettings() {
+            const newName = document.getElementById('userNameInput').value.trim();
+            if (newName === '') { alert('Le nom ne peut pas être vide'); return; }
+            localStorage.setItem('mm_user_name', newName);
+            updateUI(newName);
+            alert('Profil synchronisé !');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

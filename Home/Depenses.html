@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMaster - Mes Dépenses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="manifest" href="../manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../service-worker.js')
+                .then(() => console.log('Service Worker enregistré'))
+                .catch(err => console.error('Erreur SW:', err));
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-dark: #05070a;
+            --card-surface: #111827;
+            --rose-accent: #ff4d6d;
+            --mint-accent: #00ffaa;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background: var(--bg-dark); color: var(--text-main); padding-bottom: 100px; }
+
+        header {
+            padding: 30px 20px;
+            background: linear-gradient(to bottom, rgba(255, 77, 109, 0.1), transparent);
+        }
+
+        header h1 { font-family: 'Outfit'; font-size: 1.8rem; }
+        header span { color: var(--rose-accent); }
+
+        .container { padding: 0 20px; }
+
+        .summary-mini {
+            background: var(--card-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-mini h2 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .summary-mini p  { font-family: 'Outfit'; font-size: 1.5rem; font-weight: 800; color: var(--rose-accent); }
+
+        .list-title {
+            font-size: 0.9rem; font-weight: 700;
+            margin-bottom: 15px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .list-title i { color: var(--rose-accent); }
+
+        .history-item {
+            background: var(--card-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; transition: 0.2s;
+        }
+        .history-item:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+
+        .item-info { display: flex; align-items: center; gap: 15px; }
+        .item-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .item-text h3 { font-size: 0.95rem; font-weight: 600; }
+        .item-text p  { font-size: 0.75rem; color: var(--text-muted); }
+
+        .item-amount      { font-family: 'Outfit'; font-weight: 700; color: var(--rose-accent); }
+        .item-amount.gain { color: var(--mint-accent); }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); font-size: 0.9rem; }
+
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; height: 70px;
+            background: rgba(17,24,39,0.9); backdrop-filter: blur(20px);
+            border-radius: 35px; border: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item { text-decoration: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; font-weight: 700; }
+        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+        .nav-item.active { color: var(--rose-accent); }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Mes <span>Dépenses</span></h1>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">Historique de vos sorties d'argent</p>
+    </header>
+
+    <div class="container">
+        <div class="summary-mini">
+            <div>
+                <h2>Total Sorties</h2>
+                <p id="totalDepense">0 Ar</p>
+            </div>
+            <i class="fa-solid fa-wallet" style="font-size: 2rem; opacity: 0.2;"></i>
+        </div>
+
+        <div class="list-title">
+            <i class="fa-solid fa-clock-rotate-left"></i> Dernières transactions
+        </div>
+
+        <div id="depenseList"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="graphes.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Graphe</span></a>
+        <a href="Depenses.html" class="nav-item active"><i class="fa-solid fa-wallet"></i><span>Dépense</span></a>
+        <a href="setting2.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+    </nav>
+
+    <script>
+        function loadDepenses() {
+            const entries       = JSON.parse(localStorage.getItem('gp_entries') || '[]');
+            const listContainer = document.getElementById('depenseList');
+            const totalDisplay  = document.getElementById('totalDepense');
+
+            const totalPertes = entries
+                .filter(e => e.type === 'loss')
+                .reduce((sum, e) => sum + e.amount, 0);
+
+            totalDisplay.innerText = totalPertes.toLocaleString() + ' Ar';
+
+            if (entries.length === 0) {
+                listContainer.innerHTML = '<div class="empty-state">Aucune transaction enregistrée.</div>';
+                return;
+            }
+
+            const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            listContainer.innerHTML = sortedEntries.map(e => {
+                const isLoss     = e.type === 'loss';
+                const icon       = isLoss ? 'fa-arrow-down' : 'fa-arrow-up';
+                const colorClass = isLoss ? '' : 'gain';
+                const sign       = isLoss ? '-' : '+';
+                const bgColor    = isLoss ? 'rgba(255,77,109,0.1)' : 'rgba(0,255,170,0.1)';
+                const txtColor   = isLoss ? '#ff4d6d' : '#00ffaa';
+
+                return `
+                <div class="history-item">
+                    <div class="item-info">
+                        <div class="item-icon" style="background:${bgColor};color:${txtColor}">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div class="item-text">
+                            <h3>${e.label}</h3>
+                            <p>${new Date(e.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</p>
+                        </div>
+                    </div>
+                    <div class="item-amount ${colorClass}">
+                        ${sign} ${e.amount.toLocaleString()} Ar
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        loadDepenses();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+
+/* Style general de la page*/
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 20px;
+}
+/*conteneur*/
+.card {
+  background: white;
+  max-width: 7000px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 12px 12px rgba(0,0,0,0.1);
+}
+/*titre */
+h2 {
+  text-align: center;
+}
+/*ligne des champs projets*/
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+/*projet ajoutés*/
+.item {
+  display: flex;
+  justify-content: space-between;
+  background: #f5f5f5;
+  padding: 8px;
+  margin-top: 6px;
+  border-radius: 6px;
+}
+/*Boutton supprimer*/
+.item button {
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+/*texte totale*/
+.total {
+  margin-top: 10px;
+  font-weight: bold;
+}
+/*Boutons principaux*/
+button.main {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #082a73;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}

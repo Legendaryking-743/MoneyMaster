@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoneyMaster - Gains & Pertes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <link rel="manifest" href="../manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../service-worker.js')
+        .then(() => console.log('Service Worker enregistré'))
+        .catch(err => console.error('Erreur SW:', err));
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-dark: #05070a;
+      --card-surface: #111827;
+      --mint-accent: #00ffaa;
+      --blue-accent: #3b82f6;
+      --rose-accent: #ff4d6d;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 120px;
+      background-image: radial-gradient(circle at top right, rgba(0, 255, 170, 0.03), transparent 50%);
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(20px);
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    @keyframes logoPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.4); }
+      70%  { box-shadow: 0 0 0 12px rgba(0, 255, 170, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); }
+    }
+
+    .logo-wrap {
+      width: 45px; height: 45px;
+      background: #0f172a;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--mint-accent);
+      animation: logoPulse 2s infinite;
+    }
+
+    .head h1 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; }
+    .head span { color: var(--mint-accent); }
+
+    .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+
+    .form-card {
+      background: var(--card-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .form-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      color: var(--mint-accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
+    .field input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      padding: 10px; border-radius: 12px;
+      color: white; outline: none; transition: 0.3s;
+    }
+    .field input:focus { border-color: var(--mint-accent); background: rgba(0,255,170,0.05); }
+
+    .btn-actions { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
+    .btn { flex: 1; padding: 12px; border-radius: 14px; border: none; font-family: 'Outfit', sans-serif; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-gain { background: var(--mint-accent); color: #05070a; }
+    .btn-loss { background: var(--rose-accent); color: white; }
+    .btn:active { transform: scale(0.96); }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .metric { background: var(--card-surface); border: 1px solid var(--glass-border); padding: 15px; border-radius: 18px; text-align: center; }
+    .metric-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .metric-val { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
+    .pos { color: var(--mint-accent); }
+    .neg { color: var(--rose-accent); }
+
+    .chart-card { background: var(--card-surface); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; margin-bottom: 20px; }
+    .chart-legend { font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+    .leg-line { width: 20px; height: 3px; border-radius: 2px; background: var(--mint-accent); }
+
+    .entries-wrap { background: var(--card-surface); border: 1px solid var(--glass-border); border-radius: 24px; overflow: hidden; }
+    .entries-header { padding: 15px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; }
+    .btn-clear { background: transparent; border: 1px solid var(--rose-accent); color: var(--rose-accent); font-size: 0.7rem; padding: 4px 10px; border-radius: 8px; cursor: pointer; }
+
+    .entry-row { display: grid; grid-template-columns: 80px 1fr 100px 30px; padding: 12px 20px; border-bottom: 1px solid var(--glass-border); align-items: center; font-size: 0.85rem; }
+    .entry-date { color: var(--text-muted); font-size: 0.75rem; }
+    .entry-amount { font-family: 'Outfit', sans-serif; font-weight: 700; text-align: right; }
+    .entry-del { background: none; border: none; color: var(--text-muted); cursor: pointer; text-align: right; }
+
+    .bottom-nav {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 400px; height: 70px;
+      background: rgba(17,24,39,0.9); backdrop-filter: blur(20px);
+      border-radius: 35px; border: 1px solid var(--glass-border);
+      display: flex; justify-content: space-around; align-items: center;
+      z-index: 2000; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .nav-item { text-decoration: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; font-weight: 700; }
+    .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+    .nav-item:hover, .nav-item.active { color: var(--mint-accent); }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .metrics  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo-wrap">
+      <i class="fa-solid fa-chart-line" style="color: var(--mint-accent);"></i>
+    </div>
+    <div class="head">
+      <h1>MONEY<span>MASTER</span></h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="form-card">
+      <div class="form-title">Nouvelle Transaction</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="inDate">
+        </div>
+        <div class="field">
+          <label>Détails</label>
+          <input type="text" id="inLabel" placeholder="Salaire, Pizza...">
+        </div>
+        <div class="field">
+          <label>Montant (Ar)</label>
+          <input type="number" id="inAmount" placeholder="0">
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-gain" onclick="addEntry('gain')">ENCAISSER</button>
+          <button class="btn btn-loss" onclick="addEntry('loss')">DEPENSER</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Entrées</div>
+        <div class="metric-val pos" id="mGain">0 Ar</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Sorties</div>
+        <div class="metric-val neg" id="mLoss">0 Ar</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Solde</div>
+        <div class="metric-val" id="mNet">0 Ar</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-legend"><span class="leg-line"></span> Évolution du Solde</div>
+      <div id="chart"></div>
+    </div>
+
+    <div class="entries-wrap">
+      <div class="entries-header">
+        <span style="font-size:0.8rem;font-weight:700;color:var(--text-muted);">HISTORIQUE</span>
+        <button class="btn-clear" onclick="clearAll()">RESET</button>
+      </div>
+      <div id="entriesList"></div>
+    </div>
+  </div>
+
+  <div id="tooltip" style="position:fixed;pointer-events:none;background:#1c2030;border:1px solid var(--glass-border);border-radius:8px;padding:10px;font-size:0.7rem;color:white;opacity:0;z-index:3000;"></div>
+
+  <nav class="bottom-nav">
+    <a href="home.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="graphes.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i><span>Graphe</span></a>
+    <a href="Depenses.html" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Dépense</span></a>
+    <a href="setting2.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Réglages</span></a>
+  </nav>
+
+  <script>
+    const MONTHS_FR = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    let entries = JSON.parse(localStorage.getItem('gp_entries') || '[]');
+
+    function save() { localStorage.setItem('gp_entries', JSON.stringify(entries)); }
+
+    document.getElementById('inDate').value = new Date().toISOString().slice(0, 10);
+
+    function addEntry(type) {
+      const dateVal = document.getElementById('inDate').value;
+      const label   = document.getElementById('inLabel').value.trim() || (type === 'gain' ? 'Entrée' : 'Dépense');
+      const amount  = parseFloat(document.getElementById('inAmount').value);
+      if (!dateVal || isNaN(amount) || amount <= 0) { alert('Vérifie les champs !'); return; }
+      entries.push({ id: Date.now(), date: dateVal, label, amount, type });
+      entries.sort((a, b) => a.date.localeCompare(b.date));
+      save(); refresh();
+      document.getElementById('inLabel').value  = '';
+      document.getElementById('inAmount').value = '';
+    }
+
+    function deleteEntry(id) { entries = entries.filter(e => e.id !== id); save(); refresh(); }
+    function clearAll()      { if (confirm('Tout effacer ?')) { entries = []; save(); refresh(); } }
+
+    function refresh() { renderList(); renderMetrics(); renderChart(); }
+
+    function renderList() {
+      const list = document.getElementById('entriesList');
+      if (!entries.length) {
+        list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:0.8rem;">Aucune donnée</div>';
+        return;
+      }
+      list.innerHTML = [...entries].reverse().map(e => {
+        const d  = new Date(e.date + 'T00:00:00');
+        const ds = `${d.getDate()} ${MONTHS_FR[d.getMonth()]}`;
+        return `<div class="entry-row">
+          <span class="entry-date">${ds}</span>
+          <span style="font-weight:600">${e.label}</span>
+          <span class="entry-amount ${e.type === 'gain' ? 'pos' : 'neg'}">${e.type === 'gain' ? '+' : '-'}${e.amount.toLocaleString()}</span>
+          <button class="entry-del" onclick="deleteEntry(${e.id})">✕</button>
+        </div>`;
+      }).join('');
+    }
+
+    function renderMetrics() {
+      const tg = entries.filter(e => e.type === 'gain').reduce((s, e) => s + e.amount, 0);
+      const tl = entries.filter(e => e.type === 'loss').reduce((s, e) => s + e.amount, 0);
+      const tn = tg - tl;
+      document.getElementById('mGain').textContent = tg.toLocaleString() + ' Ar';
+      document.getElementById('mLoss').textContent = tl.toLocaleString() + ' Ar';
+      const el = document.getElementById('mNet');
+      el.textContent = (tn >= 0 ? '+' : '') + tn.toLocaleString() + ' Ar';
+      el.className   = 'metric-val ' + (tn >= 0 ? 'pos' : 'neg');
+    }
+
+    function renderChart() {
+      const container = document.getElementById('chart');
+      container.innerHTML = '';
+      if (!entries.length) return;
+
+      const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id);
+      const data   = [{ idx: 0, cumul: 0, date: sorted[0].date }];
+      let cumul = 0;
+      sorted.forEach((e, i) => {
+        cumul += e.type === 'gain' ? e.amount : -e.amount;
+        data.push({ idx: i + 1, cumul, date: e.date, label: e.label });
+      });
+
+      const width  = container.clientWidth || 300;
+      const height = 250;
+      const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+
+      const x = d3.scaleLinear([0, data.length - 1], [margin.left, width - margin.right]);
+      const y = d3.scaleLinear([d3.min(data, d => d.cumul), d3.max(data, d => d.cumul)], [height - margin.bottom, margin.top]);
+
+      const trendColor = data[data.length - 1].cumul >= 0 ? '#00ffaa' : '#ff4d6d';
+      document.querySelector('.leg-line').style.background = trendColor;
+
+      const svg = d3.select('#chart').append('svg').attr('width', width).attr('height', height);
+
+      svg.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', trendColor)
+        .attr('stroke-width', 3)
+        .attr('d', d3.line().x(d => x(d.idx)).y(d => y(d.cumul)).curve(d3.curveMonotoneX));
+
+      svg.append('g')
+        .attr('transform', `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(5).tickSize(0).tickPadding(10))
+        .call(g => g.select('.domain').remove())
+        .selectAll('text').style('fill', '#94a3b8');
+
+      svg.append('g')
+        .attr('transform', `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.0s')))
+        .call(g => g.select('.domain').remove())
+        .selectAll('text').style('fill', '#94a3b8');
+    }
+
+    window.addEventListener('resize', renderChart);
+    refresh();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,327 @@
+/* ============================================================
+   MONEYMASTER - LIST & BUDGET EDITION (V5 VERIFIED)
+   STYLE : HYPER-MODERN FINTECH
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;900&display=swap');
+
+:root {
+    --bg-dark: #05070a;           
+    --card-surface: #111827;      
+    --mint-accent: #00ffaa;       
+    --rose-accent: #ff4d6d;       
+    --blue-accent: #3b82f6;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --font-titles: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+/* 1. RESET & BASE */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes logoNeon {
+    0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 170, 0.3); }
+    50% { text-shadow: 0 0 20px rgba(0, 255, 170, 0.6); }
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-bottom: 100px; /* Espace pour la nav */
+}
+
+/* 2. HEADER (Harmonisé) */
+header {
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(15px);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-wrap .logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--mint-accent);
+    box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
+}
+
+.head {
+    font-family: var(--font-titles);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.head span {
+    color: var(--mint-accent);
+    animation: logoNeon 3s infinite;
+}
+
+/* 3. CONTAINER & CARDS */
+.container {
+    padding: 30px 15px;
+    background: radial-gradient(circle at top, rgba(59, 130, 246, 0.05), transparent 50%);
+}
+
+.Mylist {
+    width: 100%;
+    max-width: 600px;
+    background: var(--card-surface);
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 32px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    animation: slideUp 0.6s ease-out;
+}
+
+.list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.list-header h2 {
+    font-family: var(--font-titles);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* 4. BUDGET SECTION (NEUMORPHISM DARK) */
+.budget2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+}
+
+.budget-label {
+    font-family: var(--font-titles);
+    font-weight: 700;
+    color: white;
+}
+
+.budget-input-wrap {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 8px 15px;
+    backdrop-filter: blur(5px);
+}
+
+.Leprix {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-family: var(--font-titles);
+    font-weight: 700;
+    font-size: 1.1rem;
+    width: 100px;
+    text-align: right;
+}
+
+/* 5. SUMMARY CARDS */
+.budget-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 15px;
+    transition: 0.3s;
+}
+
+.summary-card.danger {
+    border-color: rgba(255, 77, 109, 0.3);
+    background: rgba(255, 77, 109, 0.05);
+}
+
+.summary-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.summary-value {
+    font-family: var(--font-titles);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* 6. FORM (INPUTS) */
+.ecri {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f172a;
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 8px 8px 8px 20px;
+    margin-bottom: 25px;
+    transition: 0.3s;
+}
+
+.ecri:focus-within {
+    border-color: var(--mint-accent);
+    box-shadow: 0 0 15px rgba(0, 255, 170, 0.1);
+}
+
+.Depense {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    flex: 1;
+}
+
+.inputprix {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: var(--mint-accent);
+    font-weight: 700;
+    width: 80px;
+    padding: 10px;
+    border-radius: 30px;
+    text-align: center;
+}
+
+button {
+    background: var(--mint-accent);
+    color: #05070a;
+    font-family: var(--font-titles);
+    font-weight: 800;
+    padding: 12px 25px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+/* 7. LIST ITEMS */
+ul li {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 15px 15px 15px 55px;
+    margin-bottom: 10px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+ul li:hover {
+    background: rgba(255,255,255,0.05);
+    transform: translateX(5px);
+}
+
+ul li::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    background-color: #0f172a;
+}
+
+ul li.checked {
+    opacity: 0.6;
+    background: rgba(0, 255, 170, 0.05);
+}
+
+ul li.checked::before {
+    background-color: var(--mint-accent);
+    border-color: var(--mint-accent);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+    background-size: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.li-prix {
+    color: var(--mint-accent);
+    font-family: var(--font-titles);
+    font-weight: 700;
+}
+
+/* 8. BOTTOM NAVIGATION (Copie conforme de Home) */
+.bottom-nav {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    height: 70px;
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 35px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.nav-item {
+    text-decoration: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+.nav-item.active, .nav-item:hover { color: var(--mint-accent); }
+
+/* 9. RESPONSIVE */
+@media (max-width: 500px) {
+    .Mylist { padding: 20px; }
+    .budget-summary { flex-direction: row; font-size: 0.8rem; }
+}

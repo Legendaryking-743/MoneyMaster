@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MoneyMaster</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker enregistré'))
+        .catch(err => console.error('Erreur SW:', err));
+    }
+  </script>
+</head>
+<body>
+  <p>Chargement de l'application...</p>
+  <script>
+    window.location.href = "Home/home.html";
+  </script>
+</body>
+</html>

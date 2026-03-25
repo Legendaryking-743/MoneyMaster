@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="project.css">
+  <title>Mes Projets</title>
+  <link rel="manifest" href="../manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../service-worker.js')
+        .then(() => console.log('Service Worker enregistré'))
+        .catch(err => console.error('Erreur SW:', err));
+    }
+  </script>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h2>Mes Projets</h2>
+    <br><br><br>
+
+    <p><b>Budget disponible :</b></p>
+    <input type="number" id="budget" placeholder="Entrer budget total en Ar">
+    <br><br><br>
+
+    <div class="row">
+      <input type="text"   id="nomProjet"  placeholder="Nom du projet">
+      <input type="number" id="prixProjet" placeholder="Prix estimé Ar">
+    </div>
+    <br><br>
+
+    <button class="main" onclick="ajouterProjet()">Ajouter le projet</button>
+
+    <div id="listeProjets"></div>
+
+    <div class="total" id="totalProjet">Total projet : 0 Ar</div>
+    <div class="total" id="resteBudget">Reste budget : 0 Ar</div>
+
+    <!-- Lien corrigé : revenir à home.html dans le même dossier -->
+    <button class="main" onclick="location.href='home.html'">Retour Accueil</button>
+  </div>
+
+  <script>
+    let projets = JSON.parse(localStorage.getItem('projets')) || [];
+
+    function ajouterProjet() {
+      const nom  = document.getElementById('nomProjet').value;
+      const prix = Number(document.getElementById('prixProjet').value);
+
+      if (nom === '' || prix <= 0) {
+        alert('Remplis le nom et le prix du projet !');
+        return;
+      }
+
+      projets.push({ nom, prix });
+      localStorage.setItem('projets', JSON.stringify(projets));
+
+      document.getElementById('nomProjet').value  = '';
+      document.getElementById('prixProjet').value = '';
+
+      afficherProjets();
+    }
+
+    function supprimerProjet(index) {
+      projets.splice(index, 1);
+      localStorage.setItem('projets', JSON.stringify(projets));
+      afficherProjets();
+    }
+
+    function afficherProjets() {
+      const liste = document.getElementById('listeProjets');
+      liste.innerHTML = '';
+      let total = 0;
+
+      projets.forEach((p, i) => {
+        total += p.prix;
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <span>${p.nom}</span>
+          <span>${p.prix.toLocaleString()} Ar
+            <button onclick="supprimerProjet(${i})">X</button>
+          </span>`;
+        liste.appendChild(div);
+      });
+
+      document.getElementById('totalProjet').innerText = 'Total projet : ' + total.toLocaleString() + ' Ar';
+
+      const budget = Number(document.getElementById('budget').value);
+      const reste  = budget - total;
+      document.getElementById('resteBudget').innerText = 'Reste budget : ' + reste.toLocaleString() + ' Ar';
+    }
+
+    document.getElementById('budget').addEventListener('input', afficherProjets);
+    afficherProjets();
+  </script>
+
+</body>
+</html>

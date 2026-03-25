@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMaster - Accueil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="home.css">
+    <link rel="icon" href="img/moneymaster.png" type="image/png">
+    <link rel="manifest" href="../manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../service-worker.js')
+                .then(() => console.log('Service Worker enregistré'))
+                .catch(err => console.error('Erreur SW:', err));
+        }
+    </script>
+</head>
+
+<body>
+    <div class="bg-blur"></div>
+
+    <header>
+        <div class="titre">
+            <h1>MoneyMaster</h1>
+        </div>
+        <div class="profil">
+            <div class="avatar"><img src="img/Icone.png" alt="avatar"></div>
+            <div class="user_name">Utilisateur</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="welcome">
+            <h1>Bonjour, <span class="highlight">Toi</span></h1>
+            <p>Résumé complet de votre situation financière</p>
+        </div>
+
+        <div class="BOX">
+            <div class="solde">
+                <div class="card-header">
+                    <h1>Total des Revenus</h1>
+                    <i class="fa-solid fa-arrow-trend-up decor-icon"></i>
+                </div>
+                <p class="Money" id="soldeDisplay">0.00 <span class="currency">Ar</span></p>
+                <div class="visual-bars">
+                    <div class="v-bar"></div>
+                    <div class="v-bar"></div>
+                    <div class="v-bar"></div>
+                </div>
+            </div>
+
+            <div class="revenue">
+                <h1>Détails des Entrées</h1>
+                <div class="info" id="revenuInfo">
+                    <div class="empty-placeholder">En attente de données...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="BOX">
+            <div class="solde" style="border-left-color: #ff4d6d;">
+                <div class="card-header">
+                    <h1>Total des Dépenses</h1>
+                    <i class="fa-solid fa-cart-shopping decor-icon" style="color: #ff4d6d; opacity: 0.2;"></i>
+                </div>
+                <p class="Money" id="depenseMontant">0.00 <span class="currency" style="color:#ff4d6d">Ar</span></p>
+            </div>
+
+            <div class="reste">
+                <div class="card-header">
+                    <h1>Économies Réelles</h1>
+                    <div class="pulse-indicator"></div>
+                </div>
+                <p class="Money" id="epargneMontant">0.00 <span class="currency">Ar</span></p>
+                <p class="alerte" id="statutMessage"></p>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="graphes.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Graphe</span></a>
+        <a href="Depenses.html" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Dépense</span></a>
+        <a href="setting2.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+    </nav>
+
+    <script src="p.js"></script>
+</body>
+
+</html>

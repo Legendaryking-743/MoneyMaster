@@ -1,0 +1,121 @@
+/* ============================================================
+   MONEYMASTER - V5.1 (PURE DECO & ANIMATION)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;900&display=swap');
+
+:root {
+    --bg-dark: #05070a;           
+    --card-surface: #111827;      
+    --mint-accent: #00ffaa;       
+    --rose-accent: #ff4d6d;       
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --font-titles: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-body); }
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    padding: 20px 20px 120px 20px;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* DECORATION BACKGROUND */
+.bg-blur {
+    position: fixed; top: -10%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0, 255, 170, 0.07) 0%, transparent 70%);
+    z-index: -1;
+    animation: float 10s infinite alternate ease-in-out;
+}
+
+@keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-20%, 20%); }
+}
+
+/* HEADER */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.titre h1 { font-family: var(--font-titles); font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--mint-accent); }
+.profil { display: flex; align-items: center; background: var(--card-surface); padding: 5px 12px; border-radius: 50px; border: 1px solid var(--glass-border); }
+.avatar img { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; border: 1.5px solid var(--mint-accent); }
+.user_name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+
+/* WELCOME */
+.welcome { margin-bottom: 30px; animation: slideIn 0.8s ease-out; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+.welcome h1 { font-family: var(--font-titles); font-size: 2rem; }
+.highlight { color: var(--mint-accent); text-shadow: 0 0 15px rgba(0, 255, 170, 0.3); }
+.welcome p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+/* BOX DISPOSITION (Inchangée) */
+.BOX {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.solde, .revenue, .reste {
+    background: var(--card-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 25px;
+    position: relative;
+    transition: 0.3s ease;
+}
+
+.solde { border-left: 5px solid var(--mint-accent); background: linear-gradient(145deg, #111827 0%, #080c14 100%); }
+
+/* ÉLÉMENTS DÉCORATIFS INTERNES */
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.decor-icon { font-size: 1.5rem; color: var(--mint-accent); opacity: 0.15; }
+
+.Money { font-family: var(--font-titles); font-size: 2.2rem; font-weight: 800; margin-top: 10px; }
+.currency { color: var(--mint-accent); font-weight: 400; font-size: 1rem; margin-left: 5px; }
+
+/* Mini barres décoratives */
+.visual-bars { display: flex; gap: 4px; margin-top: 15px; }
+.v-bar { width: 20px; height: 4px; background: var(--mint-accent); border-radius: 10px; opacity: 0.2; animation: pulseBar 2s infinite ease-in-out; }
+.v-bar:nth-child(2) { animation-delay: 0.3s; width: 40px; }
+.v-bar:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes pulseBar { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.5; } }
+
+/* Indicateur de vie (Economies) */
+.pulse-indicator {
+    width: 8px; height: 8px; background: var(--mint-accent); border-radius: 50%;
+    box-shadow: 0 0 10px var(--mint-accent);
+    animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+
+.empty-placeholder { font-size: 0.8rem; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px; opacity: 0.5; }
+
+/* NAVIGATION BASSE */
+.bottom-nav {
+    position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 400px; height: 65px;
+    background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(15px);
+    border-radius: 30px; border: 1px solid var(--glass-border);
+    display: flex; justify-content: space-around; align-items: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.nav-item { text-decoration: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
+.nav-item.active { color: var(--mint-accent); }
+.nav-item i { font-size: 1.2rem; margin-bottom: 3px; }
+.nav-item span { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+
+/* Responsive */
+@media (max-width: 480px) {
+    .Money { font-size: 1.8rem; }
+    .BOX { grid-template-columns: 1fr; }
+}
